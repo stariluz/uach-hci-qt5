@@ -1,8 +1,7 @@
-from PyQt6 import QtWidgets
-import sys
+from .Learning.first_screen import init_main_window
 
-app = QtWidgets.QApplication(sys.argv)
-main_window = QtWidgets.QMainWindow()
-main_window.setWindowTitle('Hello Qt6 with Poetry')
-main_window.show()
-sys.exit(app.exec())
+def init():
+    return init_main_window()
+
+if __name__=="__main__":
+    init()

@@ -1,8 +1,14 @@
-from first_screen_ui import *
-from PyQt5 import QtCore, QtGui, QtWidgets
+import sys
+from PyQt5 import QtWidgets
+from python_event_bus import EventBus
+from . import first_screen_ui
+import signal
 
+signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
+main_window=None
+
+class MainWindow(QtWidgets.QMainWindow, first_screen_ui.Ui_MainWindow):
     def __init__(self, *args, **kwargs):
         QtWidgets.QMainWindow.__init__(self, *args, **kwargs)
         self.setupUi(self)
@@ -14,9 +20,26 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def update(self):
         self.label.setText("¡Acabas de hacer clic en el botón!")
-        
-if __name__ == "__main__":
-    app = QtWidgets.QApplication([])
-    window = MainWindow()
-    window.show()
-    app.exec_()
+        EventBus.call("qt5_message", "I'm using qt5")
+        EventBus.call("message", "Click en QT5")
+
+    # Alternatively, use a method bound to an instance
+    def ws_message(self,message):
+        print("HOLAAAAA", message)
+        self.label.setText(f"{message}")
+
+@EventBus.on("ws_message")
+def ws_message(message):
+    main_window.ws_message(message)
+
+
+
+def init_main_window():
+    global main_window
+    main_app = QtWidgets.QApplication([])
+    main_window = MainWindow()
+    main_window.show()
+    main_app.exec_()
+    
+if __name__=="__main__":
+    init_main_window()
